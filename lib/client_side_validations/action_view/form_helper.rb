@@ -26,7 +26,6 @@ module ClientSideValidations::ActionView::Helpers
       # Order matters here. Rails mutates the options object
       script = client_side_form_settings(object, options)
       form   = super(record_or_name_or_array, *(args << options), &proc)
-      "#{form}".html_safe
       # Because of the load order requirement above this sub is necessary
       # Would be nice to not do this
       callback = lambda do
@@ -37,13 +36,15 @@ module ClientSideValidations::ActionView::Helpers
         end
         "#{script}".html_safe
       end
-      if options[:type] == "NestedForm::Builder"
+      if options[:builder].to_s == "NestedForm::Builder"
         after_nested_form(:validation_script) do
           callback.call
         end
       else
         callback.call
       end
+      
+      "#{form}".html_safe
     end
 
     def apply_form_for_options!(object_or_array, options)
