@@ -12,7 +12,6 @@
     return this.filter('form[data-validate]').each(function() {
       var form = $(this);
       var settings = window[form.attr('id')];
-
       // Set up the events for the form
       form
         .submit(function() { return form.isValid(settings.validators); })
@@ -101,6 +100,8 @@
       var valid = true;
       element.data('changed', false);
 
+      var inline_validators = element.attr('data-validations');
+      if(inline_validators) validators = eval("(" + inline_validators + ")");
       // Because 'length' is defined on the list of validators we cannot call jQuery.each on
       // the clientSideValidations.validators.all() object
       for (kind in clientSideValidations.validators.all()) {
