@@ -26,14 +26,24 @@ module ClientSideValidations::ActionView::Helpers
       # Order matters here. Rails mutates the options object
       script = client_side_form_settings(object, options)
       form   = super(record_or_name_or_array, *(args << options), &proc)
+      "#{form}".html_safe
       # Because of the load order requirement above this sub is necessary
       # Would be nice to not do this
-      script = insert_validators_into_script(script)
-      if content_for_name
-        content_for(content_for_name) { script.html_safe }
-        script = nil
+      callback = lambda do
+        script = insert_validators_into_script(script)
+        if content_for_name
+          content_for(content_for_name) { script.html_safe }
+          script = nil
+        end
+        "#{script}".html_safe
       end
-      "#{form}#{script}".html_safe
+      if options[:type] == "NestedForm::Builder"
+        after_nested_form(:validation_script) do
+          callback.call
+        end
+      else
+        callback.call
+      end
     end
 
     def apply_form_for_options!(object_or_array, options)
