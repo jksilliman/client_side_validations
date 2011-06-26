@@ -80,7 +80,7 @@ module ClientSideValidations::ActionView::Helpers
     def apply_client_side_validators(method, options = {})
       if @options[:validate] && options[:validate] != false && validators = filter_validators(@object.client_side_validation_hash[method], options[:validate])
         options.merge!("data-validate" => true)
-        options.merge!("data-validations" => validators.to_json.html_safe)
+        options.merge!("data-validations" => validators.to_json)
         @options[:validators].merge!("#{@object_name}[#{method}]#{options[:multiple] ? "[]" : nil}" => validators)
       end
     end
